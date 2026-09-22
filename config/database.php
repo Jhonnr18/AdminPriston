@@ -114,6 +114,80 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+        /*
+        | GameServer / UserDB / ShopCoin — SQL Server do Docker valhalla_pt.
+        | Nunca rode migrate nestas conexões.
+        | XAMPP/Laragon usam PDO_ODBC (não pdo_sqlsrv); o DSN precisa ser explícito.
+        */
+        'gameserver' => [
+            'driver' => 'sqlsrv',
+            'odbc' => true,
+            'odbc_datasource_name' => sprintf(
+                'Driver={%s};Server=%s,%s;Database=%s;Encrypt=yes;TrustServerCertificate=yes;LoginTimeout=5',
+                env('VALHALLA_ODBC_DRIVER', 'ODBC Driver 17 for SQL Server'),
+                env('VALHALLA_DB_HOST', '127.0.0.1'),
+                env('VALHALLA_DB_PORT', '1437'),
+                env('VALHALLA_DB_DATABASE', 'GameServer'),
+            ),
+            'host' => env('VALHALLA_DB_HOST', '127.0.0.1'),
+            'port' => env('VALHALLA_DB_PORT', '1437'),
+            'database' => env('VALHALLA_DB_DATABASE', 'GameServer'),
+            'username' => env('VALHALLA_DB_USERNAME', 'sa'),
+            'password' => env('VALHALLA_DB_PASSWORD', ''),
+            'charset' => env('VALHALLA_DB_CHARSET', 'utf8'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'encrypt' => env('VALHALLA_DB_ENCRYPT', 'yes'),
+            'trust_server_certificate' => env('VALHALLA_DB_TRUST_CERT', true),
+            'login_timeout' => 5,
+        ],
+
+        'userdb' => [
+            'driver' => 'sqlsrv',
+            'odbc' => true,
+            'odbc_datasource_name' => sprintf(
+                'Driver={%s};Server=%s,%s;Database=%s;Encrypt=yes;TrustServerCertificate=yes;LoginTimeout=5',
+                env('VALHALLA_ODBC_DRIVER', 'ODBC Driver 17 for SQL Server'),
+                env('VALHALLA_DB_HOST', '127.0.0.1'),
+                env('VALHALLA_DB_PORT', '1437'),
+                env('VALHALLA_USERDB_DATABASE', 'UserDB'),
+            ),
+            'host' => env('VALHALLA_DB_HOST', '127.0.0.1'),
+            'port' => env('VALHALLA_DB_PORT', '1437'),
+            'database' => env('VALHALLA_USERDB_DATABASE', 'UserDB'),
+            'username' => env('VALHALLA_DB_USERNAME', 'sa'),
+            'password' => env('VALHALLA_DB_PASSWORD', ''),
+            'charset' => env('VALHALLA_DB_CHARSET', 'utf8'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'encrypt' => env('VALHALLA_DB_ENCRYPT', 'yes'),
+            'trust_server_certificate' => env('VALHALLA_DB_TRUST_CERT', true),
+            'login_timeout' => 5,
+        ],
+
+        'shopcoin' => [
+            'driver' => 'sqlsrv',
+            'odbc' => true,
+            'odbc_datasource_name' => sprintf(
+                'Driver={%s};Server=%s,%s;Database=%s;Encrypt=yes;TrustServerCertificate=yes;LoginTimeout=5',
+                env('VALHALLA_ODBC_DRIVER', 'ODBC Driver 17 for SQL Server'),
+                env('VALHALLA_DB_HOST', '127.0.0.1'),
+                env('VALHALLA_DB_PORT', '1437'),
+                env('VALHALLA_SHOPCOIN_DATABASE', 'ShopCoin'),
+            ),
+            'host' => env('VALHALLA_DB_HOST', '127.0.0.1'),
+            'port' => env('VALHALLA_DB_PORT', '1437'),
+            'database' => env('VALHALLA_SHOPCOIN_DATABASE', 'ShopCoin'),
+            'username' => env('VALHALLA_DB_USERNAME', 'sa'),
+            'password' => env('VALHALLA_DB_PASSWORD', ''),
+            'charset' => env('VALHALLA_DB_CHARSET', 'utf8'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'encrypt' => env('VALHALLA_DB_ENCRYPT', 'yes'),
+            'trust_server_certificate' => env('VALHALLA_DB_TRUST_CERT', true),
+            'login_timeout' => 5,
+        ],
+
     ],
 
     /*

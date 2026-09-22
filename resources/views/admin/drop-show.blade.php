@@ -13,7 +13,11 @@
     <div class="text-lg font-semibold">{{ $meta['name'] }} · Lv {{ $meta['level'] }}</div>
     <div class="text-sm mt-1" style="color: var(--color-vlh-muted)">
         DropID <span class="mono">{{ $meta['drop_id'] }}</span>
-        · máx. itens no chão: 3 · drop público: não
+        · máx. itens no chão: {{ $meta['quantity'] ?? '—' }}
+        · drop público: {{ !empty($meta['public']) ? 'sim' : 'não' }}
+        @if (($sharedWith ?? 1) > 1)
+            · <span class="vlh-badge warn">lista compartilhada por {{ $sharedWith }} monstros</span>
+        @endif
     </div>
 </div>
 
@@ -31,9 +35,10 @@
         </div>
         <div class="flex flex-wrap gap-2">
             @foreach ($row['items'] as $it)
-                <span class="vlh-chip">
-                    <span class="vlh-icon {{ strtolower(substr($it['code'],0,2)) }}" style="width:22px;height:22px;font-size:0.55rem">{{ substr($it['code'],0,2) }}</span>
-                    <span class="mono">{{ $it['code'] }}</span>
+                    <span class="vlh-chip @if (!in_array(strtoupper($it['code']), ['GOLD','AIR'], true)) vlh-open @endif"
+                          @if (!in_array(strtoupper($it['code']), ['GOLD','AIR'], true)) data-vlh-modal="item" data-vlh-id="{{ $it['code'] }}" role="button" tabindex="0" @endif>
+                        @include('components.item-icon', ['code' => $it['code'], 'size' => 22, 'label' => substr($it['code'], 0, 2)])
+                        <span class="mono">{{ $it['code'] }}</span>
                     <span style="color: var(--color-vlh-muted)">{{ $it['name'] }}</span>
                     @isset($it['gold_min'])
                         <span>{{ $it['gold_min'] }}–{{ $it['gold_max'] }}</span>

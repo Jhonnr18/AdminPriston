@@ -20,8 +20,8 @@
             </thead>
             <tbody>
             @foreach ($problems as $p)
-                <tr>
-                    <td><div class="vlh-icon {{ strtolower(substr($p['code'],0,2)) }}">{{ substr($p['code'],0,2) }}</div></td>
+                <tr class="vlh-open" data-vlh-modal="item" data-vlh-id="{{ $p['code'] }}" role="button" tabindex="0">
+                    <td>@include('components.item-icon', ['code' => $p['code'], 'size' => 40])</td>
                     <td class="mono">{{ $p['code'] }}</td>
                     <td>{{ $p['name'] }}</td>
                     <td><span class="vlh-badge danger">{{ $p['reason'] }}</span></td>

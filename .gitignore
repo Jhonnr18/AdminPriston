@@ -15,10 +15,12 @@
 /node_modules
 # /public/build  # commitado para first-run no Windows
 /public/hot
+/public/icons
 /public/storage
 /storage/*.key
 /storage/pail
 /vendor
+composer.phar
 Homestead.json
 Homestead.yaml
 Thumbs.db

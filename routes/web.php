@@ -1,23 +1,69 @@
 <?php
 
-use App\Http\Controllers\Admin\PanelController;
+use App\Http\Controllers\Admin\CoinAdminController;
+use App\Http\Controllers\Admin\CoinShopController;
+use App\Http\Controllers\Admin\DropController;
+use App\Http\Controllers\Admin\FamilyController;
+use App\Http\Controllers\Admin\ItemController;
+use App\Http\Controllers\Admin\NpcController;
+use App\Http\Controllers\Admin\OverviewController;
+use App\Http\Controllers\Admin\PvpController;
+use App\Http\Controllers\Admin\RarityController;
+use App\Http\Controllers\Admin\RelicController;
+use App\Http\Controllers\Admin\RewardController;
+use App\Http\Controllers\Admin\ServerController;
+use App\Http\Controllers\Admin\SkillController;
+use App\Http\Controllers\MediaController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/painel');
 
+Route::get('/media/icon/{code}', [MediaController::class, 'icon'])
+    ->where('code', '[A-Za-z]{2,3}[0-9]{2,4}')
+    ->name('media.icon');
+
 Route::prefix('painel')->group(function () {
-    Route::get('/', [PanelController::class, 'overview'])->name('overview');
-    Route::get('/itens', [PanelController::class, 'itens'])->name('itens');
-    Route::get('/familia', [PanelController::class, 'familia'])->name('familia');
-    Route::get('/drops', [PanelController::class, 'drops'])->name('drops');
-    Route::get('/drops/{monster}', [PanelController::class, 'dropShow'])->name('drops.show');
-    Route::get('/skills', [PanelController::class, 'skills'])->name('skills');
-    Route::get('/pvp', [PanelController::class, 'pvp'])->name('pvp');
-    Route::get('/npcs', [PanelController::class, 'npcs'])->name('npcs');
-    Route::get('/coin-shop', [PanelController::class, 'coinShop'])->name('coin-shop');
-    Route::get('/recompensas', [PanelController::class, 'recompensas'])->name('recompensas');
-    Route::get('/raridade', [PanelController::class, 'raridade'])->name('raridade');
-    Route::get('/reliquias', [PanelController::class, 'reliquias'])->name('reliquias');
-    Route::get('/coins', [PanelController::class, 'coins'])->name('coins');
-    Route::get('/servidor', [PanelController::class, 'servidor'])->name('servidor');
+    Route::get('/', [OverviewController::class, 'index'])->name('overview');
+    Route::get('/itens', [ItemController::class, 'index'])->name('itens');
+    Route::get('/itens/{code}', [ItemController::class, 'show'])
+        ->where('code', '[A-Za-z]{2,3}[0-9]{2,4}')
+        ->name('itens.show');
+    Route::post('/itens/{table}/{code}/skin', [ItemController::class, 'updateSkin'])
+        ->where('table', '[A-Za-z]+')
+        ->where('code', '[A-Za-z]{2,3}[0-9]{2,4}')
+        ->name('itens.skin.update');
+    Route::get('/familia', [FamilyController::class, 'index'])->name('familia');
+    Route::get('/drops', [DropController::class, 'index'])->name('drops');
+    Route::get('/drops/{monster}/json', [DropController::class, 'json'])
+        ->where('monster', '[^/]+')
+        ->name('drops.json');
+    Route::get('/drops/{monster}', [DropController::class, 'show'])
+        ->where('monster', '[^/]+')
+        ->name('drops.show');
+    Route::get('/skills', [SkillController::class, 'index'])->name('skills');
+    Route::post('/skills', [SkillController::class, 'save'])->name('skills.save');
+    Route::get('/pvp', [PvpController::class, 'index'])->name('pvp');
+    Route::get('/npcs', [NpcController::class, 'index'])->name('npcs');
+    Route::get('/npcs/{npc}', [NpcController::class, 'show'])
+        ->where('npc', '[0-9]+')
+        ->name('npcs.show');
+    Route::get('/coin-shop', [CoinShopController::class, 'index'])->name('coin-shop');
+    Route::get('/recompensas', [RewardController::class, 'index'])->name('recompensas');
+    Route::get('/raridade', [RarityController::class, 'index'])->name('raridade');
+    Route::post('/raridade/grupo/{group}', [RarityController::class, 'updateGroup'])
+        ->where('group', '[0-9]+')
+        ->name('raridade.grupo.update');
+    Route::post('/raridade/mod/{type}', [RarityController::class, 'updateMod'])
+        ->where('type', '[0-9]+')
+        ->name('raridade.mod.update');
+    Route::get('/reliquias', [RelicController::class, 'index'])->name('reliquias');
+    Route::post('/reliquias/{slot}', [RelicController::class, 'updateDef'])
+        ->where('slot', '[0-9]+')
+        ->name('reliquias.def.update');
+    Route::post('/reliquias/{slot}/bonus', [RelicController::class, 'updateBonuses'])
+        ->where('slot', '[0-9]+')
+        ->name('reliquias.bonus.update');
+    Route::get('/coins', [CoinAdminController::class, 'index'])->name('coins');
+    Route::post('/coins', [CoinAdminController::class, 'adjust'])->name('coins.adjust');
+    Route::get('/servidor', [ServerController::class, 'index'])->name('servidor');
 });

@@ -6,7 +6,8 @@ Projeto **independente** do source C++ (`vallhala-2.0-Source`). Não clone este 
 
 - Stack: **Laravel 12** · PHP 8.3+ · **Livewire 4** · Blade · Tailwind 4 · Vite  
 - Spec UI: protótipo `Valhalla Catálogo` → cole em `prototype/import/` (ver [prototype/IMPORT.md](prototype/IMPORT.md))  
-- Docs de arquitetura: no repo do source, pasta `docs/painel-admin/`
+- Docs de arquitetura deste painel: [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md)
+- Docs de arquitetura do lado servidor/cliente (C++): no repo do source, pasta `docs/painel-admin/`
 
 ## Setup
 
@@ -39,7 +40,7 @@ VALHALLA_DB_PASSWORD=
 VALHALLA_CLIENT_ITEMS_ROOT="D:\valhalla\Game\image\Sinimage\Items"
 VALHALLA_CLIENT_DROPITEM_ROOT="D:\valhalla\Game\image\Sinimage\Items\DropItem"
 VALHALLA_ITEMS_H_PATH="D:\valhalla\vallhala-2.0-Source\Shared\items.h"
-VALHALLA_SKILLS_PATH="D:\valhalla\Server\Skills"
+VALHALLA_SKILLS_PATH="D:\valhalla\Server\Server\Skills"
 
 VALHALLA_ICON_TPL=it{code}.bmp
 VALHALLA_DROP_TPL=it{dorp}.smd

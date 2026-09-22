@@ -3,7 +3,7 @@
 @section('content')
 <div class="vlh-callout mb-4">
     O cliente monta <span class="mono">Image\sinImage\Items\&lt;pasta&gt;\it&lt;código&gt;.bmp</span>.
-    Se o ícone não aparecer, o caminho ou o template está errado — não o Laravel.
+    Se o ícone não aparecer, o caminho ou o template está errado — não o Laravel. O painel <strong>não</strong> roda migrate em GameServer.
 </div>
 
 <form class="grid gap-4" style="max-width:40rem" onsubmit="return false">
@@ -13,8 +13,12 @@
         <input class="vlh-input" value="{{ $config['host'] }}" readonly>
         <label class="text-xs" style="color: var(--color-vlh-muted)">Porta</label>
         <input class="vlh-input" value="{{ $config['port'] }}" readonly>
-        <label class="text-xs" style="color: var(--color-vlh-muted)">Database</label>
-        <input class="vlh-input" value="{{ $config['database'] }}" readonly>
+        <label class="text-xs" style="color: var(--color-vlh-muted)">GameServer</label>
+        <input class="vlh-input" value="{{ $config['database'] }} · {{ !empty($config['gameserver_online']) ? 'online' : 'offline' }}" readonly>
+        <label class="text-xs" style="color: var(--color-vlh-muted)">UserDB</label>
+        <input class="vlh-input" value="{{ $config['userdb'] }} · {{ !empty($config['userdb_online']) ? 'online' : 'offline' }}" readonly>
+        <label class="text-xs" style="color: var(--color-vlh-muted)">ShopCoin</label>
+        <input class="vlh-input" value="{{ $config['shopcoin'] }} · {{ !empty($config['shopcoin_online']) ? 'online' : 'offline' }}" readonly>
         <p class="text-xs m-0" style="color: var(--color-vlh-muted)">Edite no <span class="mono">.env</span> (<span class="mono">VALHALLA_DB_*</span>). Senha nunca vai para o git.</p>
     </div>
 
@@ -25,7 +29,7 @@
         <label class="text-xs" style="color: var(--color-vlh-muted)">DropItem</label>
         <input class="vlh-input mono text-xs" value="{{ $config['dropitem'] }}" readonly>
         <label class="text-xs" style="color: var(--color-vlh-muted)">items.h</label>
-        <input class="vlh-input mono text-xs" value="{{ $config['items_h'] }}" readonly>
+        <input class="vlh-input mono text-xs" value="{{ $config['items_h'] }} {{ !empty($config['items_h_exists']) ? '· ok' : '· ausente' }}" readonly>
         <label class="text-xs" style="color: var(--color-vlh-muted)">Skills .ini</label>
         <input class="vlh-input mono text-xs" value="{{ $config['skills'] }}" readonly>
         <label class="text-xs" style="color: var(--color-vlh-muted)">Templates</label>
