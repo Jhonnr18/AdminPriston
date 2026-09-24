@@ -30,17 +30,21 @@ class CoinAdminController extends Controller
     {
         $data = $request->validate([
             'username' => ['required', 'string', 'max:50'],
+            'currency' => ['required', 'in:coins,time'],
             'delta' => ['required', 'integer', 'not_in:0'],
             'reason' => ['required', 'string', 'min:5', 'max:255'],
+            'idempotency_key' => ['required', 'string', 'regex:/^[A-Za-z0-9._:-]{8,100}$/'],
         ]);
 
         try {
-            $this->coins->adjustCoins(
+            $this->coins->adjustBalance(
                 $data['username'],
+                $data['currency'],
                 (int) $data['delta'],
                 $data['reason'],
                 auth()->user()->name,
                 $request->ip(),
+                $data['idempotency_key'],
             );
         } catch (DomainException $e) {
             return back()->withErrors(['coins' => $e->getMessage()])->withInput();
