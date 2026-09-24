@@ -9,6 +9,7 @@ use App\Repositories\RarityRepository;
 use App\Repositories\RelicRepository;
 use App\Repositories\SkillFileRepository;
 use App\Repositories\ValhallaDatabase;
+use App\Services\ConfigPublicationService;
 use Tests\TestCase;
 
 class CatalogRulesTest extends TestCase
@@ -42,7 +43,7 @@ class CatalogRulesTest extends TestCase
 
     public function test_rarity_common_is_remainder_of_ten_million(): void
     {
-        $math = (new RarityRepository(app(ValhallaDatabase::class)))->remainder([
+        $math = (new RarityRepository(app(ValhallaDatabase::class), app(ConfigPublicationService::class)))->remainder([
             2 => 1_000_000,
             3 => 500_000,
             4 => 100_000,
@@ -55,7 +56,7 @@ class CatalogRulesTest extends TestCase
 
     public function test_rarity_overflow_zeroes_common(): void
     {
-        $math = (new RarityRepository(app(ValhallaDatabase::class)))->remainder([
+        $math = (new RarityRepository(app(ValhallaDatabase::class), app(ConfigPublicationService::class)))->remainder([
             2 => 9_000_000,
             3 => 2_000_000,
         ]);
@@ -87,7 +88,7 @@ class CatalogRulesTest extends TestCase
 
     public function test_relic_slot_eleven_is_locked(): void
     {
-        $repo = new RelicRepository(app(ValhallaDatabase::class));
+        $repo = new RelicRepository(app(ValhallaDatabase::class), app(ConfigPublicationService::class));
 
         $this->assertSame(11, $repo->lockedSlot());
         $this->expectException(\DomainException::class);

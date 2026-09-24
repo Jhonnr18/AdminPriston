@@ -9,12 +9,14 @@ use App\Models\GameServer\RarityChanceMod;
 use DomainException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Services\ConfigPublicationService;
 use Throwable;
 
 class RarityRepository
 {
     public function __construct(
         private readonly ValhallaDatabase $database,
+        private readonly ConfigPublicationService $publication,
     ) {}
 
     public function denominator(): int
@@ -289,6 +291,10 @@ class RarityRepository
      */
     private function enqueueReload(string $resource, string $operator): void
     {
+        if ($this->publication->queueReloadBestEffort($resource, $operator) !== null) {
+            return;
+        }
+
         try {
             DB::connection('gameserver')->insert(
                 "INSERT INTO PainelDB.dbo.ConfigReloadRequest (Resource, VersionID, RequestedBy, Status) VALUES (?, 0, ?, 'pending')",

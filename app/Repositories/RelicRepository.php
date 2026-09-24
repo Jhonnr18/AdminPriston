@@ -8,6 +8,7 @@ use App\Models\GameServer\ReliquiaDef;
 use DomainException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Services\ConfigPublicationService;
 use Throwable;
 
 class RelicRepository
@@ -20,6 +21,7 @@ class RelicRepository
 
     public function __construct(
         private readonly ValhallaDatabase $database,
+        private readonly ConfigPublicationService $publication,
     ) {}
 
     public function lockedSlot(): int
@@ -280,6 +282,10 @@ class RelicRepository
      */
     private function queueReload(string $resource, string $operator): void
     {
+        if ($this->publication->queueReloadBestEffort($resource, $operator) !== null) {
+            return;
+        }
+
         try {
             DB::connection('gameserver')->insert(
                 "INSERT INTO PainelDB.dbo.ConfigReloadRequest (Resource, VersionID, RequestedBy, Status) VALUES (?, 0, ?, 'pending')",

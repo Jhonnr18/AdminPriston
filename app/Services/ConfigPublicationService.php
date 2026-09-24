@@ -103,6 +103,20 @@ class ConfigPublicationService
         ]);
     }
 
+    public function queueReloadBestEffort(string $resource, string $operator): ?int
+    {
+        try {
+            return $this->queueReload($resource, 0, $operator);
+        } catch (Throwable $e) {
+            Log::warning('PainelDB indisponível; reload legado será usado.', [
+                'resource' => $resource,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+    }
+
     public function recentReloads(int $limit = 25): array
     {
         return DB::connection('paineldb')->table('ConfigReloadRequest')
