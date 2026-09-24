@@ -34,4 +34,16 @@
         @endforeach
     </ul>
 </div>
+
+<div class="vlh-card mt-4">
+    <h3 class="font-semibold mb-3">PKs, FKs e unicidade</h3>
+    <table class="vlh-table w-full">
+        <thead><tr><th>Nome</th><th>Status</th></tr></thead>
+        <tbody>
+        @foreach ($constraints as $constraint)
+            <tr><td class="mono">{{ $constraint['name'] }}</td><td>{{ $constraint['exists'] ? 'presente' : 'ausente' }}</td></tr>
+        @endforeach
+        </tbody>
+    </table>
+</div>
 @endsection

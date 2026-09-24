@@ -25,6 +25,7 @@ class ClanHealthRepository
             'online' => ! $this->database->demo() && $this->database->clanDbOnline(),
             'migrations' => array_map(fn (string $name) => ['name' => $name, 'status' => 'not_verified'], self::MIGRATIONS),
             'tables' => [],
+            'constraints' => [],
             'warnings' => [],
         ];
 
@@ -45,6 +46,36 @@ class ClanHealthRepository
                 $result['tables'][$table] = ['exists' => false, 'rows' => null];
                 $result['warnings'][] = 'Falha ao consultar '.$table.': '.$e->getMessage();
             }
+        }
+
+        try {
+            $keys = collect(DB::connection('clandb')->select(
+                "SELECT kc.name FROM sys.key_constraints kc WHERE kc.parent_object_id IN (SELECT object_id FROM sys.tables)"
+            ))->map(fn ($row) => (string) $row->name)->all();
+            $foreignKeys = collect(DB::connection('clandb')->select(
+                "SELECT name FROM sys.foreign_keys"
+            ))->map(fn ($row) => (string) $row->name)->all();
+            $uniqueIndexes = collect(DB::connection('clandb')->select(
+                "SELECT i.name FROM sys.indexes i JOIN sys.tables t ON t.object_id = i.object_id WHERE i.is_unique = 1"
+            ))->map(fn ($row) => (string) $row->name)->all();
+            $expected = [
+                'PK_CL', 'PK_UL', 'PK_ClanMarkData', 'PK_ClanJoinRequest',
+                'PK_ClanJoinRule', 'PK_ClanChestItem', 'PK_ClanChestLog',
+                'PK_ClanChestMutationJournal', 'FK_UL_CL', 'FK_ClanJoinRequest_CL',
+                'FK_ClanJoinRule_CL', 'FK_ClanChestItem_CL', 'FK_CCMJ_Clan',
+                'UQ_CL_ClanName_Active', 'UQ_UL_ChName_Active', 'UX_UL_Leader',
+                'UX_UL_SubLead', 'UX_CCI_Identity', 'UX_ClanMarkData_ClanId',
+            ];
+            foreach ($expected as $name) {
+                $result['constraints'][] = [
+                    'name' => $name,
+                    'exists' => in_array($name, $keys, true)
+                        || in_array($name, $foreignKeys, true)
+                        || in_array($name, $uniqueIndexes, true),
+                ];
+            }
+        } catch (Throwable $e) {
+            $result['warnings'][] = 'Falha ao auditar constraints: '.$e->getMessage();
         }
 
         if (! ($result['tables']['ClanChestMutationJournal']['exists'] ?? false)) {

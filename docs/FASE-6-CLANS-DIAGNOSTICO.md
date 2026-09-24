@@ -6,6 +6,7 @@
 - Tela somente leitura de saúde do ClanDB.
 - Inventário esperado das migrations 001–011.
 - Verificação de existência e contagem das tabelas de clã.
+- Auditoria de PKs, FKs e índices de unicidade esperados.
 - Alertas para ausência de pedidos de entrada e do
   ClanChestMutationJournal.
 - Nenhuma escrita de clã, baú, custódia ou inventário foi habilitada.
