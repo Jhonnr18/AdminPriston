@@ -41,6 +41,10 @@
                 <input type="hidden" name="key" value="{{ $selected['key'] }}">
                 <div class="font-semibold mb-1">{{ $selected['label'] }}</div>
                 <div class="text-xs mono mb-3" style="color: var(--color-vlh-muted)">chave {{ $selected['key'] }}=</div>
+                <label class="text-xs" for="skill-reason">Motivo da alteração</label>
+                <input id="skill-reason" class="vlh-input mb-3" type="text" name="reason"
+                       value="{{ old('reason') }}" minlength="5" maxlength="500"
+                       placeholder="Ex.: corrigir custo de mana do nível 4" required>
                 <div class="grid gap-2" style="grid-template-columns: repeat(10, minmax(0, 1fr));">
                     @foreach ($selected['values'] as $i => $v)
                         <div>
@@ -53,6 +57,9 @@
 
                 @if ($isOldSkill && $errors->has('skill'))
                     <p class="text-sm mt-2 mb-0" style="color: var(--color-vlh-danger, #f87171)">{{ $errors->first('skill') }}</p>
+                @endif
+                @if ($isOldSkill && $errors->has('reason'))
+                    <p class="text-sm mt-2 mb-0" style="color: var(--color-vlh-danger, #f87171)">{{ $errors->first('reason') }}</p>
                 @endif
 
                 <button class="vlh-btn primary mt-3" type="submit">Salvar (cria backup automático)</button>

@@ -48,6 +48,9 @@ Route::middleware('auth')->prefix('painel')->group(function () {
         ->name('drops.show');
     Route::get('/skills', [SkillController::class, 'index'])->name('skills');
     Route::post('/skills', [SkillController::class, 'save'])->middleware('panel.permission:skills.write')->name('skills.save');
+    Route::get('/skills/sql', [SkillController::class, 'sql'])->name('skills.sql');
+    Route::post('/skills/sql', [SkillController::class, 'saveSql'])->middleware('panel.permission:skills.write')->name('skills.sql.save');
+    Route::post('/skills/sql/cooldown', [SkillController::class, 'saveCooldown'])->middleware('panel.permission:skills.write')->name('skills.sql.cooldown');
     Route::get('/pvp', [PvpController::class, 'index'])->name('pvp');
     Route::get('/npcs', [NpcController::class, 'index'])->name('npcs');
     Route::get('/npcs/{npc}', [NpcController::class, 'show'])

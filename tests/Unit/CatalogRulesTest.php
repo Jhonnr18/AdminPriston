@@ -67,7 +67,10 @@ class CatalogRulesTest extends TestCase
 
     public function test_skill_parser_requires_ten_numeric_values(): void
     {
-        $repo = new SkillFileRepository(app(ValhallaDatabase::class));
+        $repo = new SkillFileRepository(
+            app(ValhallaDatabase::class),
+            app(\App\Services\ConfigPublicationService::class),
+        );
         $contents = <<<'INI'
         [Lutador]
         ; Bônus no dano

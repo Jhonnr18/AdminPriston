@@ -19,6 +19,7 @@
         ['route' => 'familia', 'label' => 'Linha da família'],
         ['route' => 'drops', 'label' => 'Drops dos monstros'],
         ['route' => 'skills', 'label' => 'Skills'],
+        ['route' => 'skills.sql', 'label' => 'Skills SQL'],
         ['route' => 'pvp', 'label' => 'Dano em PvP'],
         ['route' => 'npcs', 'label' => 'NPCs e Lojas'],
         ['route' => 'coin-shop', 'label' => 'Loja de Coins'],

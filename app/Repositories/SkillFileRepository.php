@@ -7,6 +7,7 @@ use App\Support\DemoCatalog;
 use DomainException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Services\ConfigPublicationService;
 use InvalidArgumentException;
 use Throwable;
 
@@ -14,6 +15,7 @@ class SkillFileRepository
 {
     public function __construct(
         private readonly ValhallaDatabase $database,
+        private readonly ConfigPublicationService $publication,
     ) {}
 
     public function valuesPerParameter(): int
@@ -98,7 +100,14 @@ class SkillFileRepository
      * @param  list<string|int|float>  $values
      * @return array{file: string, key: string, values: list<string|int|float>, backup: string}
      */
-    public function save(string $file, string $key, array $values, string $operator, ?string $ip): array
+    public function save(
+        string $file,
+        string $key,
+        array $values,
+        string $operator,
+        ?string $ip,
+        ?string $reason = null,
+    ): array
     {
         $files = $this->files();
         if (! array_key_exists($file, $files)) {
@@ -192,11 +201,28 @@ class SkillFileRepository
             'target_key' => $file.':'.$key,
             'value_before' => implode(',', $oldValues),
             'value_after' => implode(',', $values),
-            'note' => 'backup: '.basename($backupPath),
+            'note' => 'backup: '.basename($backupPath).($reason ? '; motivo: '.$reason : ''),
             'result' => 'ok',
         ]);
 
-        $this->queueReload($operator);
+        $versionId = $this->publication->recordMutation(
+            'skill_ini',
+            $file.':'.$key,
+            [
+                'sha256' => hash('sha256', $contents),
+                'content_base64' => base64_encode($contents),
+                'values' => $oldValues,
+            ],
+            [
+                'sha256' => hash('sha256', $newContents),
+                'content_base64' => base64_encode($newContents),
+                'values' => array_map('strval', $values),
+            ],
+            $operator,
+            $ip,
+            $reason,
+        );
+        $this->queueReload($operator, $versionId);
 
         return [
             'file' => $file,
@@ -212,8 +238,22 @@ class SkillFileRepository
      * aqui não pode desfazer o save — o operador ainda pode rodar
      * /reload_skills manualmente.
      */
-    private function queueReload(string $operator): void
+    private function queueReload(string $operator, ?int $versionId = null): void
     {
+        if ($versionId !== null) {
+            try {
+                $this->publication->queueReload('skill_ini', $versionId, $operator);
+                return;
+            } catch (Throwable $e) {
+                Log::warning('Falha ao enfileirar reload versionado de skill.', [
+                    'version_id' => $versionId,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        } elseif ($this->publication->queueReloadBestEffort('skill_ini', $operator) !== null) {
+            return;
+        }
+
         try {
             DB::connection('gameserver')->insert(
                 "INSERT INTO PainelDB.dbo.ConfigReloadRequest (Resource, VersionID, RequestedBy, Status) VALUES (?, 0, ?, 'pending')",
@@ -273,7 +313,7 @@ class SkillFileRepository
     private function areNumeric(array $values): bool
     {
         foreach ($values as $value) {
-            if (! is_numeric($value)) {
+            if (! is_numeric($value) || ! is_finite((float) $value)) {
                 return false;
             }
         }
