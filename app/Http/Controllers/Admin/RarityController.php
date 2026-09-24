@@ -47,7 +47,7 @@ class RarityController extends Controller
                     'epic' => (int) $data['epic'],
                     'legendary' => (int) $data['legendary'],
                 ],
-                'operador',
+                auth()->user()->name,
                 $request->ip(),
             );
         } catch (DomainException $e) {
@@ -79,7 +79,7 @@ class RarityController extends Controller
                     'epic' => (float) $data['epic'],
                     'legendary' => (float) $data['legendary'],
                 ],
-                'operador',
+                auth()->user()->name,
                 $request->ip(),
             );
         } catch (DomainException $e) {

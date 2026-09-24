@@ -29,12 +29,17 @@
     $navAdmin = [
         ['route' => 'coins', 'label' => 'Coins e Time'],
         ['route' => 'servidor', 'label' => 'Servidor'],
+        ['route' => 'publicacoes', 'label' => 'Publicações e reloads'],
     ];
     $current = request()->route()?->getName();
 @endphp
 <div class="vlh-shell">
     <aside class="vlh-side">
         <div class="vlh-brand">AdminPriston</div>
+        <div class="px-4 py-3 text-xs" style="color: var(--color-vlh-muted)">
+            {{ auth()->user()->name }} · {{ auth()->user()->role }}
+            <form method="post" action="{{ route('logout') }}" class="mt-2">@csrf<button type="submit">Sair</button></form>
+        </div>
         <nav class="vlh-nav">
             <div class="vlh-nav-group">Jogo</div>
             @foreach ($navJogo as $item)
@@ -55,7 +60,7 @@
             </div>
             <div class="text-right text-xs" style="color: var(--color-vlh-muted)">
                 <div>SQL: {{ config('valhalla.sqlsrv.database') }} @ {{ config('valhalla.sqlsrv.host') }},{{ config('valhalla.sqlsrv.port') }}</div>
-                <div class="mono">{{ $sqlStatus ?? '—' }} · Operador</div>
+                <div class="mono">{{ $sqlStatus ?? '—' }} · {{ auth()->user()->name }}</div>
             </div>
         </header>
         <main class="vlh-main">

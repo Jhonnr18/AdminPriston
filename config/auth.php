@@ -114,4 +114,12 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    'roles' => [
+        'viewer' => [],
+        'skill_editor' => ['skills.write'],
+        'rarity_editor' => ['rarity.write'],
+        'relic_editor' => ['relics.write'],
+        'economy_admin' => ['coins.write', 'shop.write'],
+        'super_admin' => ['skills.write', 'rarity.write', 'relics.write', 'coins.write', 'shop.write'],
+    ],
 ];

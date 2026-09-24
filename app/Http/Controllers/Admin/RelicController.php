@@ -59,7 +59,7 @@ class RelicController extends Controller
                 $data['item_code'],
                 $data['remover_code'] ?? null,
                 (bool) ($data['enabled'] ?? false),
-                'operador',
+                auth()->user()->name,
                 $request->ip(),
             );
         } catch (DomainException $e) {
@@ -81,7 +81,7 @@ class RelicController extends Controller
             $this->relics->updateBonuses(
                 $slot,
                 $data['bonuses'] ?? [],
-                'operador',
+                auth()->user()->name,
                 $request->ip(),
             );
         } catch (DomainException $e) {

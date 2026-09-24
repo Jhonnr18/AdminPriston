@@ -39,7 +39,7 @@ class CoinAdminController extends Controller
                 $data['username'],
                 (int) $data['delta'],
                 $data['reason'],
-                'operador',
+                auth()->user()->name,
                 $request->ip(),
             );
         } catch (DomainException $e) {

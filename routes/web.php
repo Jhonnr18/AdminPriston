@@ -13,22 +13,28 @@ use App\Http\Controllers\Admin\RelicController;
 use App\Http\Controllers\Admin\RewardController;
 use App\Http\Controllers\Admin\ServerController;
 use App\Http\Controllers\Admin\SkillController;
+use App\Http\Controllers\Admin\PublicationController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/painel');
+
+Route::get('/login', [AuthController::class, 'create'])->name('login');
+Route::post('/login', [AuthController::class, 'store'])->name('login.store');
+Route::post('/logout', [AuthController::class, 'destroy'])->middleware('auth')->name('logout');
 
 Route::get('/media/icon/{code}', [MediaController::class, 'icon'])
     ->where('code', '[A-Za-z]{2,3}[0-9]{2,4}')
     ->name('media.icon');
 
-Route::prefix('painel')->group(function () {
+Route::middleware('auth')->prefix('painel')->group(function () {
     Route::get('/', [OverviewController::class, 'index'])->name('overview');
     Route::get('/itens', [ItemController::class, 'index'])->name('itens');
     Route::get('/itens/{code}', [ItemController::class, 'show'])
         ->where('code', '[A-Za-z]{2,3}[0-9]{2,4}')
         ->name('itens.show');
-    Route::post('/itens/{table}/{code}/skin', [ItemController::class, 'updateSkin'])
+    Route::post('/itens/{table}/{code}/skin', [ItemController::class, 'updateSkin'])->middleware('panel.permission:rarity.write')
         ->where('table', '[A-Za-z]+')
         ->where('code', '[A-Za-z]{2,3}[0-9]{2,4}')
         ->name('itens.skin.update');
@@ -41,7 +47,7 @@ Route::prefix('painel')->group(function () {
         ->where('monster', '[^/]+')
         ->name('drops.show');
     Route::get('/skills', [SkillController::class, 'index'])->name('skills');
-    Route::post('/skills', [SkillController::class, 'save'])->name('skills.save');
+    Route::post('/skills', [SkillController::class, 'save'])->middleware('panel.permission:skills.write')->name('skills.save');
     Route::get('/pvp', [PvpController::class, 'index'])->name('pvp');
     Route::get('/npcs', [NpcController::class, 'index'])->name('npcs');
     Route::get('/npcs/{npc}', [NpcController::class, 'show'])
@@ -50,20 +56,21 @@ Route::prefix('painel')->group(function () {
     Route::get('/coin-shop', [CoinShopController::class, 'index'])->name('coin-shop');
     Route::get('/recompensas', [RewardController::class, 'index'])->name('recompensas');
     Route::get('/raridade', [RarityController::class, 'index'])->name('raridade');
-    Route::post('/raridade/grupo/{group}', [RarityController::class, 'updateGroup'])
+    Route::post('/raridade/grupo/{group}', [RarityController::class, 'updateGroup'])->middleware('panel.permission:rarity.write')
         ->where('group', '[0-9]+')
         ->name('raridade.grupo.update');
-    Route::post('/raridade/mod/{type}', [RarityController::class, 'updateMod'])
+    Route::post('/raridade/mod/{type}', [RarityController::class, 'updateMod'])->middleware('panel.permission:rarity.write')
         ->where('type', '[0-9]+')
         ->name('raridade.mod.update');
     Route::get('/reliquias', [RelicController::class, 'index'])->name('reliquias');
-    Route::post('/reliquias/{slot}', [RelicController::class, 'updateDef'])
+    Route::post('/reliquias/{slot}', [RelicController::class, 'updateDef'])->middleware('panel.permission:relics.write')
         ->where('slot', '[0-9]+')
         ->name('reliquias.def.update');
-    Route::post('/reliquias/{slot}/bonus', [RelicController::class, 'updateBonuses'])
+    Route::post('/reliquias/{slot}/bonus', [RelicController::class, 'updateBonuses'])->middleware('panel.permission:relics.write')
         ->where('slot', '[0-9]+')
         ->name('reliquias.bonus.update');
     Route::get('/coins', [CoinAdminController::class, 'index'])->name('coins');
-    Route::post('/coins', [CoinAdminController::class, 'adjust'])->name('coins.adjust');
+    Route::post('/coins', [CoinAdminController::class, 'adjust'])->middleware('panel.permission:coins.write')->name('coins.adjust');
     Route::get('/servidor', [ServerController::class, 'index'])->name('servidor');
+    Route::get('/publicacoes', [PublicationController::class, 'index'])->name('publicacoes');
 });

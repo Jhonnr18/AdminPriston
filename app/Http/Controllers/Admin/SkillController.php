@@ -42,7 +42,7 @@ class SkillController extends Controller
                 $data['file'],
                 $data['key'],
                 $data['values'],
-                'operador',
+                auth()->user()->name,
                 $request->ip(),
             );
         } catch (DomainException $e) {

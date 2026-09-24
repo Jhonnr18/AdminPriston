@@ -74,7 +74,7 @@ class ItemController extends Controller
                 $table,
                 $code,
                 $data['skin_code'] ?? null,
-                'operador',
+                auth()->user()->name,
                 $request->ip(),
             );
         } catch (DomainException $e) {
