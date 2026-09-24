@@ -23,6 +23,8 @@ class ClanHealthRepository
         $tables = ['CL', 'UL', 'ClanMarkData', 'ClanJoinRequest', 'ClanJoinRule', 'ClanChestItem', 'ClanChestLog', 'ClanChestMutationJournal'];
         $result = [
             'online' => ! $this->database->demo() && $this->database->clanDbOnline(),
+            'architecture' => 'ClanWindow -> ClanProtocol -> OnSever -> ClanRuntime -> SqlClanRepository -> ClanDB',
+            'runtime_status' => 'CODE COMPLETE / OPERATIONAL VALIDATION PENDING',
             'migrations' => array_map(fn (string $name) => ['name' => $name, 'status' => 'not_verified'], self::MIGRATIONS),
             'tables' => [],
             'constraints' => [],
@@ -30,7 +32,7 @@ class ClanHealthRepository
         ];
 
         if (! $result['online']) {
-            $result['warnings'][] = 'ClanDB offline ou modo demo; nenhuma escrita foi executada.';
+            $result['warnings'][] = 'ClanDB offline ou modo demo; nenhum diagnóstico do banco foi executado.';
             return $result;
         }
 
@@ -98,7 +100,7 @@ class ClanHealthRepository
         }
 
         if (! ($result['tables']['ClanChestMutationJournal']['exists'] ?? false)) {
-            $result['warnings'][] = 'Journal do baú ausente: custódia permanece bloqueada.';
+            $result['warnings'][] = 'Journal 011 ausente: recovery e custódia do baú não podem ser validados.';
         }
 
         return $result;

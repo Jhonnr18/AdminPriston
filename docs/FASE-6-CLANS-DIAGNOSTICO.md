@@ -2,6 +2,11 @@
 
 ## Entrega inicial
 
+- Auditoria alinhada ao Clan Core moderno da source:
+  ClanWindow -> ClanProtocol -> OnSever -> ClanRuntime -> SqlClanRepository ->
+  ClanDB.
+- CL/UL tratados como storage persistido compatível, não como o fluxo legado
+  WebDB/ASP.
 - Conexão clandb separada no painel.
 - Tela somente leitura de saúde do ClanDB.
 - Inventário esperado das migrations 001–011.
@@ -12,6 +17,10 @@
 - Alertas para ausência de pedidos de entrada e do
   ClanChestMutationJournal.
 - Nenhuma escrita de clã, baú, custódia ou inventário foi habilitada.
+
+O código moderno está marcado pela source como CODE COMPLETE /
+OPERATIONAL VALIDATION PENDING. Isso exige separar implementação existente de
+prova de migration aplicada, build, deployment e teste in-game.
 
 ## Critério para liberar escrita
 

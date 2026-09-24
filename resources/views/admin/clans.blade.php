@@ -2,8 +2,16 @@
 
 @section('content')
 <div class="vlh-callout mb-4">
-    Diagnóstico somente leitura do ClanDB. Escritas, baú e custódia ficam
-    bloqueados até as migrations e o journal serem homologados.
+    Clan Core moderno em diagnóstico somente leitura. O fluxo autoritativo é
+    cliente -> GameServer -> SqlClanRepository -> ClanDB; CL/UL são storage
+    compatível, não o fluxo legado WebDB/ASP.
+</div>
+
+<div class="vlh-card mb-4">
+    <div class="text-xs">Arquitetura</div>
+    <div class="mono text-sm mt-1">{{ $architecture }}</div>
+    <div class="text-xs mt-3">Estado</div>
+    <div class="vlh-badge warn mt-1">{{ $runtime_status }}</div>
 </div>
 
 @if (!$online)
