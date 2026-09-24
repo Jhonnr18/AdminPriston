@@ -30,7 +30,7 @@
     <h3 class="font-semibold mb-3">Migrations esperadas</h3>
     <ul class="text-sm">
         @foreach ($migrations as $migration)
-            <li class="mb-1"><span class="mono">{{ $migration['name'] }}</span> — {{ $migration['status'] }}</li>
+            <li class="mb-1"><span class="mono">{{ $migration['name'] }}</span> — <span class="vlh-badge {{ $migration['status'] === 'applied' ? 'gold' : '' }}">{{ $migration['status'] }}</span></li>
         @endforeach
     </ul>
 </div>

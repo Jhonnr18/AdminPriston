@@ -7,6 +7,8 @@
 - Inventário esperado das migrations 001–011.
 - Verificação de existência e contagem das tabelas de clã.
 - Auditoria de PKs, FKs e índices de unicidade esperados.
+- Status derivado das migrations: aplicada, pendente ou validação manual para
+  as migrations que alteram dados, como 007a.
 - Alertas para ausência de pedidos de entrada e do
   ClanChestMutationJournal.
 - Nenhuma escrita de clã, baú, custódia ou inventário foi habilitada.

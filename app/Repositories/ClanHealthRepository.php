@@ -74,6 +74,25 @@ class ClanHealthRepository
                         || in_array($name, $uniqueIndexes, true),
                 ];
             }
+
+            $constraintMap = collect($result['constraints'])->keyBy('name');
+            $tableMap = $result['tables'];
+            $has = static fn (string $name): bool => (bool) ($constraintMap->get($name)['exists'] ?? false);
+            $table = static fn (string $name): bool => (bool) ($tableMap[$name]['exists'] ?? false);
+            $result['migrations'] = [
+                ['name' => '001_clan_core_pk.sql', 'status' => $has('PK_CL') ? 'applied' : 'pending'],
+                ['name' => '002_clan_name_unique.sql', 'status' => $has('UQ_CL_ClanName_Active') ? 'applied' : 'pending'],
+                ['name' => '003_clan_membership_constraints.sql', 'status' => $has('PK_UL') && $has('UQ_UL_ChName_Active') ? 'applied' : 'pending'],
+                ['name' => '004_clan_mark_data.sql', 'status' => $has('PK_ClanMarkData') ? 'applied' : 'pending'],
+                ['name' => '005_clan_fk_ul_cl.sql', 'status' => $has('FK_UL_CL') ? 'applied' : 'pending'],
+                ['name' => '006_clan_state_columns.sql', 'status' => 'manual_data_check'],
+                ['name' => '007_clan_role_uniqueness.sql', 'status' => $has('UX_UL_Leader') && $has('UX_UL_SubLead') ? 'applied' : 'pending'],
+                ['name' => '007a_normalize_permi.sql', 'status' => 'manual_data_check'],
+                ['name' => '008_clan_join_requests.sql', 'status' => $table('ClanJoinRequest') && $table('ClanJoinRule') ? 'applied' : 'pending'],
+                ['name' => '009_clan_chest.sql', 'status' => $table('ClanChestItem') && $table('ClanChestLog') ? 'applied' : 'pending'],
+                ['name' => '010_clan_mark_blob.sql', 'status' => $has('UX_ClanMarkData_ClanId') ? 'applied' : 'pending'],
+                ['name' => '011_clan_chest_mutation_journal.sql', 'status' => $has('PK_ClanChestMutationJournal') && $has('FK_CCMJ_Clan') ? 'applied' : 'pending'],
+            ];
         } catch (Throwable $e) {
             $result['warnings'][] = 'Falha ao auditar constraints: '.$e->getMessage();
         }
