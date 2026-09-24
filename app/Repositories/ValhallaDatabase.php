@@ -14,6 +14,8 @@ class ValhallaDatabase
 
     private ?bool $shopcoin = null;
 
+    private ?bool $clandb = null;
+
     public function demo(): bool
     {
         return (bool) config('valhalla.demo_mode');
@@ -32,6 +34,11 @@ class ValhallaDatabase
     public function shopcoinOnline(): bool
     {
         return $this->shopcoin ??= $this->cachedPing('shopcoin');
+    }
+
+    public function clanDbOnline(): bool
+    {
+        return $this->clandb ??= $this->cachedPing('clandb');
     }
 
     public function usingFixtures(): bool

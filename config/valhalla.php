@@ -39,6 +39,9 @@ return [
     'shopcoin' => [
         'database' => env('VALHALLA_SHOPCOIN_DATABASE', 'ShopCoin'),
     ],
+    'clandb' => [
+        'database' => env('VALHALLA_CLANDB_DATABASE', 'ClanDB'),
+    ],
 
     /*
     |--------------------------------------------------------------------------

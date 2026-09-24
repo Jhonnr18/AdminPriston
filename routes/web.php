@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CoinAdminController;
 use App\Http\Controllers\Admin\CoinShopController;
+use App\Http\Controllers\Admin\ClanController;
 use App\Http\Controllers\Admin\DropController;
 use App\Http\Controllers\Admin\FamilyController;
 use App\Http\Controllers\Admin\ItemController;
@@ -81,4 +82,5 @@ Route::middleware('auth')->prefix('painel')->group(function () {
     Route::post('/coins', [CoinAdminController::class, 'adjust'])->middleware('panel.permission:coins.write')->name('coins.adjust');
     Route::get('/servidor', [ServerController::class, 'index'])->name('servidor');
     Route::get('/publicacoes', [PublicationController::class, 'index'])->name('publicacoes');
+    Route::get('/clans', [ClanController::class, 'index'])->name('clans');
 });

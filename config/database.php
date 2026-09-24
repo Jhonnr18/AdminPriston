@@ -188,6 +188,29 @@ return [
             'login_timeout' => 5,
         ],
 
+        'clandb' => [
+            'driver' => 'sqlsrv',
+            'odbc' => true,
+            'odbc_datasource_name' => sprintf(
+                'Driver={%s};Server=%s,%s;Database=%s;Encrypt=yes;TrustServerCertificate=yes;LoginTimeout=5',
+                env('VALHALLA_ODBC_DRIVER', 'ODBC Driver 17 for SQL Server'),
+                env('VALHALLA_DB_HOST', '127.0.0.1'),
+                env('VALHALLA_DB_PORT', '1437'),
+                env('VALHALLA_CLANDB_DATABASE', 'ClanDB'),
+            ),
+            'host' => env('VALHALLA_DB_HOST', '127.0.0.1'),
+            'port' => env('VALHALLA_DB_PORT', '1437'),
+            'database' => env('VALHALLA_CLANDB_DATABASE', 'ClanDB'),
+            'username' => env('VALHALLA_DB_USERNAME', 'sa'),
+            'password' => env('VALHALLA_DB_PASSWORD', ''),
+            'charset' => env('VALHALLA_DB_CHARSET', 'utf8'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'encrypt' => env('VALHALLA_DB_ENCRYPT', 'yes'),
+            'trust_server_certificate' => env('VALHALLA_DB_TRUST_CERT', true),
+            'login_timeout' => 5,
+        ],
+
         'paineldb' => [
             'driver' => 'sqlsrv',
             'odbc' => true,

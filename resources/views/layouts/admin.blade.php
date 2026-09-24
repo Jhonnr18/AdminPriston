@@ -33,6 +33,7 @@
         ['route' => 'servidor', 'label' => 'Servidor'],
         ['route' => 'publicacoes', 'label' => 'Publicações e reloads'],
     ];
+    $navAdmin[] = ['route' => 'clans', 'label' => 'Auditoria de clãs'];
     $current = request()->route()?->getName();
 @endphp
 <div class="vlh-shell">
