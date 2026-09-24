@@ -5,6 +5,7 @@ namespace App\Services;
 use Carbon\CarbonImmutable;
 use DomainException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Throwable;
@@ -94,13 +95,65 @@ class ConfigPublicationService
     {
         $this->assertResource($resource);
 
-        return (int) DB::connection('paineldb')->table('ConfigReloadRequest')->insertGetId([
+        $requestId = (int) DB::connection('paineldb')->table('ConfigReloadRequest')->insertGetId([
             'Resource' => $resource,
             'VersionID' => $versionId,
             'RequestedBy' => $operator,
             'Status' => 'pending',
             'RequestedAt' => CarbonImmutable::now(),
         ]);
+
+        $this->requestServerReload($resource, $versionId, $operator, $requestId);
+
+        return $requestId;
+    }
+
+    public function requestServerReload(
+        string $resource,
+        int $versionId,
+        string $operator,
+        ?int $requestId = null,
+    ): bool {
+        $this->assertResource($resource);
+        $baseUrl = rtrim((string) config('valhalla.server_reload.url'), '/');
+        $path = config('valhalla.server_reload.paths.'.$resource);
+
+        if ($baseUrl === '' || ! is_string($path) || $path === '') {
+            Log::warning('API de reload do servidor não configurada.', [
+                'resource' => $resource,
+                'version_id' => $versionId,
+            ]);
+            return false;
+        }
+
+        try {
+            $request = Http::acceptJson()
+                ->timeout((int) config('valhalla.server_reload.timeout', 5))
+                ->withHeaders(['X-Panel-Operator' => $operator]);
+            $token = (string) config('valhalla.server_reload.token');
+            if ($token !== '') {
+                $request = $request->withToken($token);
+            }
+
+            $response = $request->post($baseUrl.$path, [
+                'resource' => $resource,
+                'version_id' => $versionId,
+                'request_id' => $requestId,
+                'operator' => $operator,
+            ]);
+            $response->throw();
+
+            return true;
+        } catch (Throwable $e) {
+            Log::warning('API de reload do servidor indisponível.', [
+                'resource' => $resource,
+                'version_id' => $versionId,
+                'endpoint' => $baseUrl.$path,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
     }
 
     public function queueReloadBestEffort(string $resource, string $operator): ?int
@@ -112,6 +165,7 @@ class ConfigPublicationService
                 'resource' => $resource,
                 'error' => $e->getMessage(),
             ]);
+            $this->requestServerReload($resource, 0, $operator);
 
             return null;
         }

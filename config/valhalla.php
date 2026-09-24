@@ -1,6 +1,20 @@
 <?php
 
 return [
+    'server_reload' => [
+        'url' => env('VALHALLA_SERVER_API_URL'),
+        'token' => env('VALHALLA_SERVER_API_TOKEN'),
+        'timeout' => (int) env('VALHALLA_SERVER_API_TIMEOUT', 5),
+        'paths' => [
+            'rarity_group' => '/api/rarity/reload',
+            'rarity_mod' => '/api/rarity/reload',
+            'relic_def' => '/api/relic/reload',
+            'relic_bonus' => '/api/relic/reload',
+            'skill_ini' => '/api/skill/reload',
+            'skill_sql' => '/api/skill/reload',
+            'item_skin' => '/api/item/reload',
+        ],
+    ],
     /*
     |--------------------------------------------------------------------------
     | SQL Server (GameServer) — não use migrate nisso

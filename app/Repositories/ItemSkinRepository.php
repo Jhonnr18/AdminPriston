@@ -8,6 +8,7 @@ use DomainException;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Services\ConfigPublicationService;
 use Throwable;
 
 /**
@@ -24,6 +25,7 @@ class ItemSkinRepository
         private readonly ValhallaDatabase $database,
         private readonly ItemsHRepository $itemsH,
         private readonly ClientAssetRepository $assets,
+        private readonly ConfigPublicationService $publication,
     ) {}
 
     /**
@@ -299,6 +301,10 @@ class ItemSkinRepository
      */
     private function queueReload(string $resource, string $operator): void
     {
+        if ($this->publication->queueReloadBestEffort($resource, $operator) !== null) {
+            return;
+        }
+
         try {
             DB::connection('gameserver')->insert(
                 "INSERT INTO PainelDB.dbo.ConfigReloadRequest (Resource, VersionID, RequestedBy, Status) VALUES (?, 0, ?, 'pending')",
