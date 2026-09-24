@@ -172,7 +172,15 @@ class RelicRepository
                 'result' => 'ok',
             ]);
 
-            $this->queueReload('relic_def', $operator);
+            $versionId = $this->publication->recordMutation(
+                'relic_def',
+                (string) $slot,
+                $before ?? [],
+                $after,
+                $operator,
+                $ip,
+            );
+            $this->queueReload('relic_def', $operator, $versionId);
 
             return [
                 'slot' => (int) $relic->RelicIndex,
@@ -265,7 +273,15 @@ class RelicRepository
                 'result' => 'ok',
             ]);
 
-            $this->queueReload('relic_bonus', $operator);
+            $versionId = $this->publication->recordMutation(
+                'relic_bonus',
+                (string) $slot,
+                $before,
+                $after,
+                $operator,
+                $ip,
+            );
+            $this->queueReload('relic_bonus', $operator, $versionId);
 
             return [
                 'slot' => $slot,
@@ -280,9 +296,20 @@ class RelicRepository
      * aqui não pode derrubar a escrita — o operador ainda pode rodar
      * /reload_relic manualmente.
      */
-    private function queueReload(string $resource, string $operator): void
+    private function queueReload(string $resource, string $operator, ?int $versionId = null): void
     {
-        if ($this->publication->queueReloadBestEffort($resource, $operator) !== null) {
+        if ($versionId !== null) {
+            try {
+                $this->publication->queueReload($resource, $versionId, $operator);
+                return;
+            } catch (Throwable $e) {
+                Log::warning('Falha ao enfileirar reload versionado de relíquia.', [
+                    'resource' => $resource,
+                    'version_id' => $versionId,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        } elseif ($this->publication->queueReloadBestEffort($resource, $operator) !== null) {
             return;
         }
 

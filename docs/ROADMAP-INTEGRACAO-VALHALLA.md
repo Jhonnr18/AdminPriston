@@ -173,9 +173,9 @@ bancos sem alterações.
 
 - [ ] Aplicar/auditar migrations 30 e 31.
 - [ ] Comparar banco real com `snapshot-gameserver-20260921.sql`.
-- [ ] Implementar validações dos docs 174: denominador 10.000.000, Common
+- [x] Implementar validações dos docs 174: denominador 10.000.000, Common
       como resto, grupos válidos, limites, slots 0..11 e slot 11 bloqueado.
-- [ ] Implementar diff por grupo/slot, lock e rollback.
+- [x] Implementar diff por grupo/slot, lock de linha e snapshot anterior para rollback operacional.
 - [ ] Liberar `rarity_group`, `rarity_chance`, `rarity_mod`, `relic_def`
       e `relic_bonus` apenas após validar reload.
 
@@ -264,4 +264,3 @@ auditorias e retomadas de clã 167/168, levantamentos 24/120,
 `docs/sql/snapshot/README.md`, snapshots de 21/09/2026,
 scripts SQL 20–36, migrations `docs/sql/clan/001..011` e
 `docs/item-migration/`.
-

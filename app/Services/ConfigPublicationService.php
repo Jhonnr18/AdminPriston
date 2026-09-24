@@ -117,6 +117,74 @@ class ConfigPublicationService
         }
     }
 
+    /**
+     * Registra uma alteração já aplicada no banco de domínio.
+     *
+     * O painel mantém a transação da configuração no GameServer separada da
+     * transação de governança do PainelDB. Por isso esta operação é best-effort:
+     * a configuração não deve ser revertida apenas porque o schema de
+     * versionamento ainda não foi instalado no ambiente.
+     */
+    public function recordMutation(
+        string $resource,
+        string $targetKey,
+        array $before,
+        array $after,
+        string $operator,
+        ?string $ip,
+        ?string $reason = null,
+    ): ?int {
+        $this->assertResource($resource);
+
+        try {
+            return (int) DB::connection('paineldb')->transaction(function () use (
+                $resource, $targetKey, $before, $after, $operator, $ip, $reason
+            ): int {
+                $version = DB::connection('paineldb')->table('ConfigVersion')->insertGetId([
+                    'Resource' => $resource,
+                    'VersionID' => 0,
+                    'CreatedBy' => $operator,
+                    'CreatedAt' => CarbonImmutable::now(),
+                    'Reason' => $reason,
+                ]);
+
+                $beforeJson = json_encode($before, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+                $afterJson = json_encode($after, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+
+                DB::connection('paineldb')->table('ConfigSnapshot')->insert([
+                    'Resource' => $resource,
+                    'VersionID' => $version,
+                    'TargetKey' => $targetKey,
+                    'SnapshotJson' => $beforeJson,
+                    'CreatedBy' => $operator,
+                    'CreatedAt' => CarbonImmutable::now(),
+                ]);
+
+                DB::connection('paineldb')->table('valhalla_config_audit')->insert([
+                    'Operator' => $operator,
+                    'IpAddress' => $ip,
+                    'Resource' => $resource,
+                    'TargetKey' => $targetKey,
+                    'ValueBefore' => $beforeJson,
+                    'ValueAfter' => $afterJson,
+                    'Result' => 'published',
+                    'Reason' => $reason,
+                    'CreatedAt' => CarbonImmutable::now(),
+                ]);
+
+                return (int) $version;
+            });
+        } catch (Throwable $e) {
+            Log::warning('PainelDB indisponível; mutation seguirá sem versionamento externo.', [
+                'resource' => $resource,
+                'target_key' => $targetKey,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+    }
+
     public function recentReloads(int $limit = 25): array
     {
         return DB::connection('paineldb')->table('ConfigReloadRequest')

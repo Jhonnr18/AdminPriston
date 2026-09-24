@@ -194,7 +194,15 @@ class RarityRepository
                 'result' => 'ok',
             ]);
 
-            $this->enqueueReload('rarity_group', $operator);
+            $versionId = $this->publication->recordMutation(
+                'rarity_group',
+                (string) $groupId,
+                $before,
+                $after,
+                $operator,
+                $ip,
+            );
+            $this->enqueueReload('rarity_group', $operator, $versionId);
 
             $sum = array_sum($afterChances);
 
@@ -277,7 +285,15 @@ class RarityRepository
                 'result' => 'ok',
             ]);
 
-            $this->enqueueReload('rarity_mod', $operator);
+            $versionId = $this->publication->recordMutation(
+                'rarity_mod',
+                (string) $type,
+                $before,
+                $after,
+                $operator,
+                $ip,
+            );
+            $this->enqueueReload('rarity_mod', $operator, $versionId);
 
             return $after;
         });
@@ -289,9 +305,20 @@ class RarityRepository
      * Falha aqui é só logada — não pode derrubar a transação de escrita da config,
      * já que o operador ainda pode rodar o reload manual como hoje.
      */
-    private function enqueueReload(string $resource, string $operator): void
+    private function enqueueReload(string $resource, string $operator, ?int $versionId = null): void
     {
-        if ($this->publication->queueReloadBestEffort($resource, $operator) !== null) {
+        if ($versionId !== null) {
+            try {
+                $this->publication->queueReload($resource, $versionId, $operator);
+                return;
+            } catch (Throwable $e) {
+                Log::warning('Falha ao enfileirar reload versionado de raridade.', [
+                    'resource' => $resource,
+                    'version_id' => $versionId,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        } elseif ($this->publication->queueReloadBestEffort($resource, $operator) !== null) {
             return;
         }
 
