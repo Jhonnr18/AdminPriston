@@ -21,6 +21,7 @@ class ConfigPublicationService
     private const RESOURCES = [
         'rarity_group', 'rarity_chance', 'rarity_mod', 'rarity_bonus',
         'relic_def', 'relic_bonus', 'skill_ini', 'skill_sql', 'item_skin',
+        'shop_coin',
     ];
 
     public function publish(

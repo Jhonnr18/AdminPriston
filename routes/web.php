@@ -57,6 +57,9 @@ Route::middleware('auth')->prefix('painel')->group(function () {
         ->where('npc', '[0-9]+')
         ->name('npcs.show');
     Route::get('/coin-shop', [CoinShopController::class, 'index'])->name('coin-shop');
+    Route::post('/coin-shop/{shop}', [CoinShopController::class, 'updateShop'])->middleware('panel.permission:shop.write')->name('coin-shop.shop.update');
+    Route::post('/coin-shop/tab/{tab}', [CoinShopController::class, 'updateTab'])->middleware('panel.permission:shop.write')->name('coin-shop.tab.update');
+    Route::post('/coin-shop/item/{item}', [CoinShopController::class, 'updateItem'])->middleware('panel.permission:shop.write')->name('coin-shop.item.update');
     Route::get('/recompensas', [RewardController::class, 'index'])->name('recompensas');
     Route::get('/raridade', [RarityController::class, 'index'])->name('raridade');
     Route::get('/raridade/bonus', [RarityController::class, 'bonuses'])->name('raridade.bonus');

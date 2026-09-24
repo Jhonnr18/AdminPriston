@@ -14,6 +14,7 @@ return [
             'skill_ini' => '/api/skill/reload',
             'skill_sql' => '/api/skill/reload',
             'item_skin' => '/api/item/reload',
+            'shop_coin' => '/api/shop/reload',
         ],
     ],
     /*
