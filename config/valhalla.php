@@ -8,6 +8,7 @@ return [
         'paths' => [
             'rarity_group' => '/api/rarity/reload',
             'rarity_mod' => '/api/rarity/reload',
+            'rarity_bonus' => '/api/rarity/reload',
             'relic_def' => '/api/relic/reload',
             'relic_bonus' => '/api/relic/reload',
             'skill_ini' => '/api/skill/reload',
@@ -78,6 +79,25 @@ return [
     'rarity_denominator' => 10_000_000,
     'relic_slot_count' => 12,
     'relic_locked_slot' => 11,
+    'rarity_bonus_bands' => [
+        'all' => 'Todos os níveis',
+        'lt103' => 'Abaixo do nível 103',
+        'gte103' => 'Nível 103 ou superior',
+    ],
+    'rarity_bonus_stats' => [
+        'WeaponDamagePct' => 'Dano de arma (%)',
+        'CriticalHit' => 'Crítico',
+        'DefenseAbsorbPct' => 'Absorção/defesa (%)',
+        'ShieldBlock' => 'Bloqueio de escudo',
+        'GloveAttackPower' => 'Ataque da luva',
+        'BootSpeed' => 'Velocidade da bota',
+        'AccessoryLife' => 'Vida de acessórios',
+        'AccessoryRegenPct' => 'Regeneração de acessórios (%)',
+        'BraceletBlock' => 'Bloqueio de bracelete',
+        'BraceletAttackRating' => 'Ataque de bracelete',
+        'BraceletDefence' => 'Defesa de bracelete',
+        'BraceletPotionSpace' => 'Espaço de poções',
+    ],
     'skill_values_per_parameter' => 10,
 
     'item_tables' => [

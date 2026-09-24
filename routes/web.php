@@ -59,6 +59,8 @@ Route::middleware('auth')->prefix('painel')->group(function () {
     Route::get('/coin-shop', [CoinShopController::class, 'index'])->name('coin-shop');
     Route::get('/recompensas', [RewardController::class, 'index'])->name('recompensas');
     Route::get('/raridade', [RarityController::class, 'index'])->name('raridade');
+    Route::get('/raridade/bonus', [RarityController::class, 'bonuses'])->name('raridade.bonus');
+    Route::post('/raridade/bonus', [RarityController::class, 'updateBonus'])->middleware('panel.permission:rarity.write')->name('raridade.bonus.update');
     Route::post('/raridade/grupo/{group}', [RarityController::class, 'updateGroup'])->middleware('panel.permission:rarity.write')
         ->where('group', '[0-9]+')
         ->name('raridade.grupo.update');

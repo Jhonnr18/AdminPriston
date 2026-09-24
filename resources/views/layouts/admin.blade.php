@@ -25,6 +25,7 @@
         ['route' => 'coin-shop', 'label' => 'Loja de Coins'],
         ['route' => 'recompensas', 'label' => 'Recompensas'],
         ['route' => 'raridade', 'label' => 'Raridade'],
+        ['route' => 'raridade.bonus', 'label' => 'Bônus de raridade'],
         ['route' => 'reliquias', 'label' => 'Relíquias'],
     ];
     $navAdmin = [

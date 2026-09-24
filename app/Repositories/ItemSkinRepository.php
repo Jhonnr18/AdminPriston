@@ -223,7 +223,15 @@ class ItemSkinRepository
             ]);
         }
 
-        $this->queueReload('item_skin', $operator);
+        $versionId = $this->publication->recordMutation(
+            'item_skin',
+            "{$table}.{$code}",
+            ['SkinCode' => null],
+            ['SkinCode' => $skinCode],
+            $operator,
+            $ip,
+        );
+        $this->queueReload('item_skin', $operator, $versionId);
 
         return $this->present($table, $code, null, $skinCode, true);
     }
@@ -267,7 +275,15 @@ class ItemSkinRepository
                 'result' => 'ok',
             ]);
 
-            $this->queueReload('item_skin', $operator);
+            $versionId = $this->publication->recordMutation(
+                'item_skin',
+                "{$table}.{$code}",
+                ['SkinCode' => $before],
+                ['SkinCode' => $skinCode],
+                $operator,
+                $ip,
+            );
+            $this->queueReload('item_skin', $operator, $versionId);
 
             return $this->present($table, $code, $before, $skinCode, false);
         });
@@ -299,9 +315,16 @@ class ItemSkinRepository
      * resource que o poller de ConfigReloadRequest reconhece pra disparar
      * GameServer::readItemsFromDB() (contrato combinado com o time do C++).
      */
-    private function queueReload(string $resource, string $operator): void
+    private function queueReload(string $resource, string $operator, ?int $versionId = null): void
     {
-        if ($this->publication->queueReloadBestEffort($resource, $operator) !== null) {
+        if ($versionId !== null) {
+            try {
+                $this->publication->queueReload($resource, $versionId, $operator);
+                return;
+            } catch (Throwable) {
+                // fallback abaixo
+            }
+        } elseif ($this->publication->queueReloadBestEffort($resource, $operator) !== null) {
             return;
         }
 

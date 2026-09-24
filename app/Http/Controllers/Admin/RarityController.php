@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\RarityRepository;
+use App\Repositories\RarityBonusRepository;
 use DomainException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,7 +14,45 @@ class RarityController extends Controller
 {
     public function __construct(
         private readonly RarityRepository $rarity,
+        private readonly RarityBonusRepository $bonuses,
     ) {}
+
+    public function bonuses(): View
+    {
+        return view('admin.raridade-bonus', [
+            'rows' => $this->bonuses->all(),
+            'bands' => config('valhalla.rarity_bonus_bands'),
+            'stats' => config('valhalla.rarity_bonus_stats'),
+            'pageTitle' => 'Bônus de raridade',
+        ]);
+    }
+
+    public function updateBonus(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'rarity' => ['required', 'integer', 'between:2,5'],
+            'band' => ['required', 'string'],
+            'stat' => ['required', 'string'],
+            'value' => ['required', 'numeric', 'min:0'],
+            'reason' => ['required', 'string', 'min:5', 'max:500'],
+        ]);
+
+        try {
+            $this->bonuses->update(
+                (int) $data['rarity'],
+                $data['band'],
+                $data['stat'],
+                $data['value'],
+                auth()->user()->name,
+                $request->ip(),
+                $data['reason'],
+            );
+        } catch (DomainException $e) {
+            return back()->withErrors(['rarity_bonus' => $e->getMessage()])->withInput();
+        }
+
+        return redirect()->route('raridade.bonus')->with('status', 'Bônus de raridade atualizado.');
+    }
 
     public function index(): View
     {
